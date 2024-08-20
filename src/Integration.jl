@@ -30,11 +30,11 @@ struct h_adaptive <: IntegrationMethod end
 struct p_adaptive <: IntegrationMethod end
 
 function Integrate(f::Function, C::Domain{d}; error_norm=Cubature.PAIRED, abstol=1e-10, isconjugate=false,kws...) where d
-    Integrate(f, C, h_adaptive(); error_norm=Cubature.PAIRED, abstol=1e-10, isconjugate=isconjugate, isminus=isminus, LHSisminus=LHSisminus,kws...)
+    Integrate(f, C, h_adaptive(); error_norm=Cubature.PAIRED, abstol=1e-10, isconjugate=isconjugate,kws...)
 end
 
 function Integrate(f::Function, C::Domain{d}, IntegrationMethod::h_adaptive; error_norm=Cubature.PAIRED, abstol=1e-10, isconjugate=false,kws...) where d
-    f_captured = (args...; kwargs...) -> f(args...; isconjugate=isconjugate, isminus=isminus, LHSisminus=LHSisminus,kws...)
+    f_captured = (args...; kwargs...) -> f(args...; isconjugate=isconjugate,kws...)
     f□ = let f=f_captured, C=C; TransformIntegrand(f,C) end
     f□v = let f□ = f□, d=d;  Converter(f□ , d) end
     (val,err) = hcubature_v(2, f□v, zeros(d), ones(d); error_norm=error_norm, abstol=abstol, kws...)
@@ -42,7 +42,7 @@ function Integrate(f::Function, C::Domain{d}, IntegrationMethod::h_adaptive; err
 end
 
 function Integrate(f::Function, C::Domain{d}, IntegrationMethod::p_adaptive; error_norm=Cubature.PAIRED, abstol=1e-10, isconjugate=false,kws...) where d
-    f_captured = (args...; kwargs...) -> f(args...; isconjugate=isconjugate, isminus=isminus, LHSisminus=LHSisminus,kws...)
+    f_captured = (args...; kwargs...) -> f(args...; isconjugate=isconjugate,kws...)
     f□ = let f=f, C=C; TransformIntegrand(f,C) end
     f□v = let f□ = f□, d=d;  Converter(f□ , d) end
     (val,err) = pcubature_v(2, f□v, zeros(d), ones(d); error_norm=error_norm, abstol=abstol, kws...)
@@ -54,7 +54,7 @@ function Integrate(f::Function, C::SumDomain{d,p,T}; error_norm=Cubature.PAIRED,
     errt = Float64(0.0);
     doms = C.domains;
     for i ∈ 1:p
-        val,error = Integrate(f,doms[i]; error_norm=Cubature.PAIRED, abstol=abstol,isconjugate=isconjugate, isminus=isminus, LHSisminus=LHSisminus,kws...)
+        val,error = Integrate(f,doms[i]; error_norm=Cubature.PAIRED, abstol=abstol,isconjugate=isconjugate,kws...)
         valt += val
         errt += error^2
     end
