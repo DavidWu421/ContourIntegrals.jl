@@ -29,11 +29,11 @@ abstract type IntegrationMethod end
 struct h_adaptive <: IntegrationMethod end
 struct p_adaptive <: IntegrationMethod end
 
-function Integrate(f::Function, C::Domain{d}; error_norm=Cubature.PAIRED, abstol=1e-10, isconjugate=false, isminus=false, LHSisminus=false,kws...) where d
+function Integrate(f::Function, C::Domain{d}; error_norm=Cubature.PAIRED, abstol=1e-10, isconjugate=false,kws...) where d
     Integrate(f, C, h_adaptive(); error_norm=Cubature.PAIRED, abstol=1e-10, isconjugate=isconjugate, isminus=isminus, LHSisminus=LHSisminus,kws...)
 end
 
-function Integrate(f::Function, C::Domain{d}, IntegrationMethod::h_adaptive; error_norm=Cubature.PAIRED, abstol=1e-10, isconjugate=false, isminus=false, LHSisminus=false,kws...) where d
+function Integrate(f::Function, C::Domain{d}, IntegrationMethod::h_adaptive; error_norm=Cubature.PAIRED, abstol=1e-10, isconjugate=false,kws...) where d
     f_captured = (args...; kwargs...) -> f(args...; isconjugate=isconjugate, isminus=isminus, LHSisminus=LHSisminus,kws...)
     f□ = let f=f_captured, C=C; TransformIntegrand(f,C) end
     f□v = let f□ = f□, d=d;  Converter(f□ , d) end
@@ -41,7 +41,7 @@ function Integrate(f::Function, C::Domain{d}, IntegrationMethod::h_adaptive; err
     val[1]+im*val[2] , sqrt(err[1]^2 + err[2]^2)
 end
 
-function Integrate(f::Function, C::Domain{d}, IntegrationMethod::p_adaptive; error_norm=Cubature.PAIRED, abstol=1e-10, isconjugate=false, isminus=false, LHSisminus=false,kws...) where d
+function Integrate(f::Function, C::Domain{d}, IntegrationMethod::p_adaptive; error_norm=Cubature.PAIRED, abstol=1e-10, isconjugate=false,kws...) where d
     f_captured = (args...; kwargs...) -> f(args...; isconjugate=isconjugate, isminus=isminus, LHSisminus=LHSisminus,kws...)
     f□ = let f=f, C=C; TransformIntegrand(f,C) end
     f□v = let f□ = f□, d=d;  Converter(f□ , d) end
@@ -49,7 +49,7 @@ function Integrate(f::Function, C::Domain{d}, IntegrationMethod::p_adaptive; err
     val[1]+im*val[2] , sqrt(err[1]^2 + err[2]^2)
 end
 
-function Integrate(f::Function, C::SumDomain{d,p,T}; error_norm=Cubature.PAIRED,abstol=1e-10,isconjugate=false, isminus=false, LHSisminus=false,kws...) where {d,p,T}
+function Integrate(f::Function, C::SumDomain{d,p,T}; error_norm=Cubature.PAIRED,abstol=1e-10,isconjugate=false,kws...) where {d,p,T}
     valt = ComplexF64(0.0);
     errt = Float64(0.0);
     doms = C.domains;
