@@ -30,7 +30,7 @@ struct h_adaptive <: IntegrationMethod end
 struct p_adaptive <: IntegrationMethod end
 
 function Integrate(f::Function, C::Domain{d}; error_norm=Cubature.PAIRED, abstol=1e-10, pertparam=0,kws...) where d
-    Integrate(f, C, h_adaptive(); error_norm=Cubature.PAIRED, abstol=1e-10, pertparam=pertparam,kws...)
+    Integrate(f, C, h_adaptive(); error_norm=Cubature.PAIRED, abstol=abstol, pertparam=pertparam,kws...)
 end
 
 function Integrate(f::Function, C::Domain{d}, IntegrationMethod::h_adaptive; error_norm=Cubature.PAIRED, abstol=1e-10, pertparam=0,kws...) where d
